@@ -17,56 +17,47 @@ floor.drawRect(0, window.innerHeight - 50, window.innerWidth, 50);
 floor.endFill();
 app.stage.addChild(floor);
 
-// a vat to store balls movement
-var ballUp = true;
-
 // a vars to position balls`s starting position
 var ball_center_x = window.innerWidth / 2;
 var ball_center_y = window.innerHeight - 100;
+var acceleration = 0;
+
 
 
 //Creating a new ball obj
 const ball = new Graphics();
 ball.beginFill(0xa85932);
 ball.drawCircle(ball_center_x, ball_center_y, 50);
-
 ball.endFill();
 app.stage.addChild(ball);
+ball.y = -600;
 
 // Click event listener
 ball.interactive = true;
 ball.on("pointerdown", function(){
-    bounceUp(300);
+    acceleration = -25;
 });
 
-// balls gravity
+//balls gravity
 const gravity = setInterval(function(){
-    if(ball.y < 0){
-        ball.y += 5;
+    if(ball.y  < 0){
+        ball.y += acceleration;
+        if (ball.y + acceleration >= 0){
+            acceleration =  -35;
+            changeBackground()
+        } else {
+            acceleration += 1;
+        }
     }
-}, 5)
+},15)
 
-//ball bouncing 
-const bouncing = setInterval(function(){
-    if(ball.y == 0){
-        bounceUp(500);
-        changeBackground()
-    }
-},10)
+
 // Function to generate a random hex number
 function changeBackground(){
     var randomColor = Math.floor(Math.random()*16777215).toString(16);
     app.renderer.backgroundColor = "0x" + randomColor;
 }
 
-function bounceUp(force){
-    const gravity = setInterval(function(){
-        if (force > 0){
-            ball.y += -10;
-            force -= 10;
-        } 
-    }, 5)
-}
 
 
 
