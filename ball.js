@@ -24,45 +24,49 @@ var ballUp = true;
 var ball_center_x = window.innerWidth / 2;
 var ball_center_y = window.innerHeight - 100;
 
+
 //Creating a new ball obj
 const ball = new Graphics();
 ball.beginFill(0xa85932);
 ball.drawCircle(ball_center_x, ball_center_y, 50);
+
 ball.endFill();
 app.stage.addChild(ball);
 
 // Click event listener
 ball.interactive = true;
 ball.on("pointerdown", function(){
-    ballUp = true;
+    bounceUp(300);
 });
 
-// Infinite loop to change the ball`s position
-const interval = setInterval(function() {
-    
-    if(ball.y > -400 && ballUp == true){
-        ball.y -= 10;
+// balls gravity
+const gravity = setInterval(function(){
+    if(ball.y < 0){
+        ball.y += 5;
     }
-    if(ball.y <= -400){
-        ball.y += 10;
-        ballUp = false;
-    } 
-    if(ball.y < 0 && ballUp == false){
-        ball.y += 10;
-    }
-    if(ball.y == 0){
-       ball.y -= 10;
-       ballUp = true;
-       changeBackground();
-   }
-}, 10);
+}, 5)
 
+//ball bouncing 
+const bouncing = setInterval(function(){
+    if(ball.y == 0){
+        bounceUp(500);
+        changeBackground()
+    }
+},10)
 // Function to generate a random hex number
 function changeBackground(){
     var randomColor = Math.floor(Math.random()*16777215).toString(16);
     app.renderer.backgroundColor = "0x" + randomColor;
 }
 
+function bounceUp(force){
+    const gravity = setInterval(function(){
+        if (force > 0){
+            ball.y += -10;
+            force -= 10;
+        } 
+    }, 5)
+}
 
 
 
