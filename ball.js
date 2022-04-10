@@ -31,7 +31,7 @@ function setup(loader, resources){
         textures.push(pic)
     }
 
-    ball = new PIXI.AnimatedSprite(textures);
+    const ball = new PIXI.AnimatedSprite(textures);
     ball.position.set( window.innerWidth / 2, window.innerHeight - 600);
     ball.anchor.x = 0.5;
     ball.anchor.y = 0.5;
@@ -61,7 +61,7 @@ function setup(loader, resources){
             if (ball.x + accelerationX < 50){
                 accelerationX = 3.5;
             }
-            if (ball.x + accelerationX > window.innerWidth - 50){
+            if(ball.x + accelerationX > window.innerWidth - 50){
                 accelerationX = -3.5;
             }
         }
@@ -84,6 +84,8 @@ function setup(loader, resources){
         };
         ball.animationSpeed = 0.4;
     });
+
+
 }
 
 
