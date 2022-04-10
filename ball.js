@@ -3,9 +3,10 @@ const Application = PIXI.Application;
 //Creating a canvis with dynamic size
 const app = new Application({
     width: window.innerWidth,
-    height: window.innerHeight
+    height: window.innerHeight,
+    antialias: true
 });
-app.renderer.backgroundColor = 0xffffff;
+app.renderer.backgroundColor = 0x665e48;
 app.renderer.view.style.position = "absolute";
 document.body.appendChild(app.view);
 
@@ -17,46 +18,78 @@ floor.drawRect(0, window.innerHeight - 50, window.innerWidth, 50);
 floor.endFill();
 app.stage.addChild(floor);
 
-// a vars to position balls`s starting position
-var ball_center_x = window.innerWidth / 2;
-var ball_center_y = window.innerHeight - 100;
-var acceleration = 0;
+const loader = PIXI.Loader.shared;
+loader.add("Ball_Spritesheet", "images/Ball_Spritesheet.json");
 
+loader.load(setup);
 
+function setup(loader, resources){
 
-//Creating a new ball obj
-const ball = new Graphics();
-ball.beginFill(0xa85932);
-ball.drawCircle(ball_center_x, ball_center_y, 50);
-ball.endFill();
-app.stage.addChild(ball);
-ball.y = -600;
+    const textures = [];
+    for(let i = 0; i < 8; i++){
+        const pic = PIXI.Texture.from('Ball_'+ i +'.png');
+        textures.push(pic)
+    }
 
-// Click event listener
-ball.interactive = true;
-ball.on("pointerdown", function(){
-    acceleration = -25;
-});
+    ball = new PIXI.AnimatedSprite(textures);
+    ball.position.set( window.innerWidth / 2, window.innerHeight - 600);
+    ball.anchor.x = 0.5;
+    ball.anchor.y = 0.5;
+    app.stage.addChild(ball);
 
-//balls gravity
-const gravity = setInterval(function(){
-    if(ball.y  < 0){
-        ball.y += acceleration;
-        if (ball.y + acceleration >= 0){
-            acceleration =  -35;
-            changeBackground()
-        } else {
-            acceleration += 1;
+    app.ticker.add(delta => loop(delta));
+
+    var accelerationY = 0.05;
+    var accelerationX = 0;
+
+    ball.animationSpeed = 1.5;
+    function loop(delta) {
+        if(ball.y  <  window.innerHeight - 100){
+            ball.y += accelerationY;
+            ball.x += accelerationX;
+            if (ball.y + accelerationY > window.innerHeight - 100){
+                accelerationY =  -8;
+                ball.play();
+                ball.onComplete = function () {
+                    ball.gotoAndStop(0);
+                  };
+                ball.loop = false;
+            } else {
+                accelerationY += 0.1;
+            }
+
+            if (ball.x + accelerationX < 50){
+                accelerationX = 3.5;
+            }
+            if (ball.x + accelerationX > window.innerWidth - 50){
+                accelerationX = -3.5;
+            }
         }
     }
-},15)
 
-
-// Function to generate a random hex number
-function changeBackground(){
-    var randomColor = Math.floor(Math.random()*16777215).toString(16);
-    app.renderer.backgroundColor = "0x" + randomColor;
+    ball.interactive = true;
+    ball.on("pointerdown", function(){
+        accelerationY = -8;
+        if(event.clientX > ball.x) {
+            accelerationX -= 3;
+        } else {
+            accelerationX += 3;
+        }
+        ball.gotoAndPlay(5);
+        ball.onFrameChange = function () {
+            if(ball.currentFrame == 7) {
+                ball.gotoAndPlay(0);
+                ball.stop();
+            }
+        };
+        ball.animationSpeed = 0.4;
+    });
 }
+
+
+
+
+
 
 
 
